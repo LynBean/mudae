@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import asyncio
 import re
 from datetime import UTC, datetime, timedelta
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from discord import Color
 from fastapi import HTTPException, status
@@ -11,8 +13,10 @@ from selfcord.ext.commands import Context, command
 from selfcord.ext.tasks import loop
 
 from src.ext import timeout
-from src.mudae.client import MudaeClient
 from src.mudae.cogs import MudaeCog
+
+if TYPE_CHECKING:
+    from src.mudae.client import MudaeClient
 
 from .lock import MudaeRTLock
 

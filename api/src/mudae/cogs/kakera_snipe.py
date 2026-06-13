@@ -1,10 +1,13 @@
+from __future__ import annotations
+
 import asyncio
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 from selfcord import Button, Emoji, Message, PartialEmoji
 from selfcord.ext.commands import Context, command
 
-from src.mudae.client import MudaeClient
+if TYPE_CHECKING:
+    from src.mudae.client import MudaeClient
 
 from . import MudaeCog
 

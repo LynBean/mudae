@@ -1,8 +1,13 @@
+from __future__ import annotations
+
 import asyncio
+from typing import TYPE_CHECKING
 
 from selfcord.ext.commands import Context, command
 
-from src.mudae.client import MudaeClient
+if TYPE_CHECKING:
+    from src.mudae.client import MudaeClient
+
 from src.mudae.cogs import MudaeCog
 
 from .lock import MUDAE_SAY_LOCK

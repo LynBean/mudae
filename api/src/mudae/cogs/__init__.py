@@ -9,32 +9,8 @@ from selfcord import Interaction, Message
 from selfcord.context_managers import Typing
 from selfcord.ext.commands import Cog
 
-from src.mudae.cogs.daily import setup as daily_setup
-from src.mudae.cogs.dk import setup as dk_setup
-from src.mudae.cogs.give import setup as give_setup
-from src.mudae.cogs.givek import setup as givek_setup
-from src.mudae.cogs.givesp import setup as givesp_setup
-from src.mudae.cogs.kakera_badge import setup as kakera_badge_setup
-from src.mudae.cogs.kakera_snipe import setup as kakera_snipe_setup
-from src.mudae.cogs.oh import setup as oh_setup
-from src.mudae.cogs.roll import setup as roll_setup
-from src.mudae.cogs.say import setup as say_setup
-
 if TYPE_CHECKING:
     from src.mudae import MudaeClient
-
-
-async def load_extensions(client: MudaeClient, /) -> None:
-    await daily_setup(client)
-    await dk_setup(client)
-    await give_setup(client)
-    await givek_setup(client)
-    await givesp_setup(client)
-    await kakera_badge_setup(client)
-    await kakera_snipe_setup(client)
-    await oh_setup(client)
-    await roll_setup(client)
-    await say_setup(client)
 
 
 class MudaeLock:

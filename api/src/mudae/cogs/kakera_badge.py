@@ -1,8 +1,11 @@
-from typing import ClassVar
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, ClassVar
 
 from selfcord.ext.commands import Context, command
 
-from src.mudae.client import MudaeClient
+if TYPE_CHECKING:
+    from src.mudae.client import MudaeClient
 
 from . import MudaeCog
 

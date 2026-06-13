@@ -15,7 +15,16 @@ from selfcord.ext.commands import Bot, CommandError, Context
 from selfcord.http import Route
 from selfcord.user import BaseUser
 
-from src.mudae.cogs import load_extensions
+from src.mudae.cogs.daily import setup as daily_setup
+from src.mudae.cogs.dk import setup as dk_setup
+from src.mudae.cogs.give import setup as give_setup
+from src.mudae.cogs.givek import setup as givek_setup
+from src.mudae.cogs.givesp import setup as givesp_setup
+from src.mudae.cogs.kakera_badge import setup as kakera_badge_setup
+from src.mudae.cogs.kakera_snipe import setup as kakera_snipe_setup
+from src.mudae.cogs.oh import setup as oh_setup
+from src.mudae.cogs.roll import setup as roll_setup
+from src.mudae.cogs.say import setup as say_setup
 from src.mudae.watchdog import Watchdog
 
 if TYPE_CHECKING:
@@ -116,7 +125,16 @@ class MudaeClient(Bot):
 
     @override
     async def setup_hook(self) -> None:
-        await load_extensions(self)
+        await daily_setup(self)
+        await dk_setup(self)
+        await give_setup(self)
+        await givek_setup(self)
+        await givesp_setup(self)
+        await kakera_badge_setup(self)
+        await kakera_snipe_setup(self)
+        await oh_setup(self)
+        await roll_setup(self)
+        await say_setup(self)
 
     @override
     async def _run_event(
