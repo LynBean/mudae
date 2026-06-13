@@ -36,7 +36,6 @@ jobs:
 
       - name: Generate API config
         env:
-          ENV: production
           REDIS_URL: redis://redis:6379
           DISCORD_WATCHDOG_BOT_TOKEN: ${{ secrets.DISCORD_WATCHDOG_BOT_TOKEN }}
           DISCORD_MUDAE_OWNER_IDS: ${{ secrets.DISCORD_MUDAE_OWNER_IDS }}
@@ -46,8 +45,29 @@ jobs:
           DISCORD_MUDAE_CHANNEL_IDS: ${{ secrets.DISCORD_MUDAE_CHANNEL_IDS }}
           DISCORD_MUDAE_SELFBOT_TOKENS: ${{ secrets.DISCORD_MUDAE_SELFBOT_TOKENS }}
         run: |
-          cd api
-          python scripts/write_config.py
+          python3 -c "
+          import os
+          import glob
+
+          env_vars = {
+              'REDIS_URL': os.environ['REDIS_URL'],
+              'DISCORD_WATCHDOG_BOT_TOKEN': os.environ['DISCORD_WATCHDOG_BOT_TOKEN'],
+              'DISCORD_MUDAE_OWNER_IDS': os.environ['DISCORD_MUDAE_OWNER_IDS'],
+              'DISCORD_WATCHDOG_CHANNEL_ID': os.environ['DISCORD_WATCHDOG_CHANNEL_ID'],
+              'DISCORD_MUDAE_SELFBOT_PREFIX': os.environ['DISCORD_MUDAE_SELFBOT_PREFIX'],
+              'DISCORD_MUDAE_BOT_PREFIX': os.environ['DISCORD_MUDAE_BOT_PREFIX'],
+              'DISCORD_MUDAE_CHANNEL_IDS': os.environ['DISCORD_MUDAE_CHANNEL_IDS'],
+              'DISCORD_MUDAE_SELFBOT_TOKENS': os.environ['DISCORD_MUDAE_SELFBOT_TOKENS'],
+          }
+
+          for filepath in glob.glob('**/*.py', recursive=True):
+              with open(filepath, 'r') as f:
+                  content = f.read()
+              for key, value in env_vars.items():
+                  content = content.replace(f'os.environ[\"{key}\"]', f"'''{value}'''")
+              with open(filepath, 'w') as f:
+                  f.write(content)
+          "
 
       - name: Build and Push API Image
         uses: docker/build-push-action@v6
