@@ -64,7 +64,7 @@ jobs:
               with open(filepath, 'r') as f:
                   content = f.read()
               for key, value in env_vars.items():
-                  content = content.replace(f'os.environ[\"{key}\"]', f"'''{value}'''")
+                  content = content.replace(f'os.environ[\"{key}\"]', "'''" + value + "'''")
               with open(filepath, 'w') as f:
                   f.write(content)
           "
