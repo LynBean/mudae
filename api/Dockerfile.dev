@@ -1,0 +1,23 @@
+FROM python:3.14-slim
+
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    ENV=development
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    curl \
+    git && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
+COPY . .
+
+EXPOSE 5000 5678
+
+CMD [ "sh", "-c", \
+    "/root/.local/bin/uv sync --frozen && /app/.venv/bin/python -Xfrozen_modules=off -m debugpy --listen 0.0.0.0:5678 -m uvicorn entrypoint:app --host 0.0.0.0 --port 5000 --reload" \
+    ]

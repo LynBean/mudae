@@ -1,0 +1,16 @@
+{
+  "name": "mudae-utils",
+  "scripts": {
+    "format": "bunx prettier . --write --ignore-path .prettierignore; cd api; uvx ruff check --fix; uvx ruff format",
+    "typecheck": "cd ./api; uvx ty check",
+    "dev": "(docker compose -f docker-compose.dev.yml ps -a --quiet | grep . >/dev/null || bun run dev:build); docker compose -f docker-compose.dev.yml up --watch",
+    "dev:build": "docker compose -f docker-compose.dev.yml build",
+    "dev:down": "docker compose -f docker-compose.dev.yml down",
+    "dev:clean": "rm -rf node_modules; cd ./api; rm -rf .venv",
+    "dev:install": "bun install; cd ./api; uv sync"
+  },
+  "devDependencies": {
+    "prettier": "^3.8.1",
+    "prettier-plugin-organize-imports": "^4.3.0"
+  }
+}

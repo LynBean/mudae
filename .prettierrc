@@ -1,0 +1,17 @@
+{
+  "endOfLine": "lf",
+  "printWidth": 90,
+  "tabWidth": 2,
+  "useTabs": false,
+  "overrides": [
+    {
+      "files": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
+      "options": {
+        "semi": false,
+        "singleQuote": true,
+        "trailingComma": "es5"
+      }
+    }
+  ],
+  "plugins": ["prettier-plugin-organize-imports"]
+}

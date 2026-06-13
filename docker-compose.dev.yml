@@ -1,0 +1,43 @@
+name: mudae
+
+services:
+  api:
+    container_name: mudae-api
+    image: ghcr.io/lynbean/mudae/api:latest
+    build:
+      context: api
+      dockerfile: Dockerfile.dev
+    develop:
+      watch:
+        - path: api
+          target: /app
+          action: sync
+          initial_sync: true
+        - path: api/uv.lock
+          target: /app/uv.lock
+          action: sync+restart
+
+    networks:
+      - mudae
+    ports:
+      - 25678:5678
+    restart: unless-stopped
+    environment:
+      DISCORD_MUDAE_BOT_PREFIX: ${DISCORD_MUDAE_BOT_PREFIX}
+      DISCORD_MUDAE_CHANNEL_IDS: ${DISCORD_MUDAE_CHANNEL_IDS}
+      DISCORD_MUDAE_OWNER_IDS: ${DISCORD_MUDAE_OWNER_IDS}
+      DISCORD_MUDAE_SELFBOT_PREFIX: ${DISCORD_MUDAE_SELFBOT_PREFIX}
+      DISCORD_MUDAE_SELFBOT_TOKENS: ${DISCORD_MUDAE_SELFBOT_TOKENS}
+      DISCORD_WATCHDOG_BOT_TOKEN: ${DISCORD_WATCHDOG_BOT_TOKEN}
+      DISCORD_WATCHDOG_CHANNEL_ID: ${DISCORD_WATCHDOG_CHANNEL_ID}
+      REDIS_URL: redis://redis:6379
+
+  redis:
+    container_name: mudae-redis
+    image: redis/redis-stack:latest
+    networks:
+      - mudae
+    restart: unless-stopped
+
+networks:
+  mudae:

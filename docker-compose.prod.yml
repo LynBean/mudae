@@ -1,0 +1,35 @@
+name: mudae
+
+services:
+  api:
+    container_name: mudae-api
+    image: ${DOCKER_IMAGE_URL}/api:${DOCKER_IMAGE_TAG:-latest}
+    build:
+      context: api
+      dockerfile: Dockerfile.prod
+
+    depends_on:
+      redis:
+        condition: service_started
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'python -c "import urllib.request; urllib.request.urlopen(''http://localhost:5000/health'', timeout=5).read()"',
+        ]
+      timeout: 20s
+      interval: 20s
+      retries: 2
+    networks:
+      - mudae
+    restart: always
+
+  redis:
+    container_name: mudae-redis
+    image: redis/redis-stack-server:latest
+    networks:
+      - mudae
+    restart: always
+
+networks:
+  mudae:

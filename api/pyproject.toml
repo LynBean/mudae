@@ -1,0 +1,67 @@
+[project]
+name = "mudae-api"
+version = "0.1.0"
+requires-python = ">=3.14, <3.15"
+dependencies = [
+    "discord-py>=2.7.1",
+    "fastapi>=0.116.1",
+    "loguru>=0.7.3",
+    "redis>=6.4.0",
+    "selfcord-py",
+    "tenacity>=9.1.4",
+    "uvicorn[standard]>=0.35.0",
+]
+
+[dependency-groups]
+dev = [
+    "debugpy>=1.8.16",
+    "ruff>=0.12.8",
+    "ty>=0.0.1a17",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = []
+
+[tool.uv.sources]
+selfcord-py = { git = "https://github.com/dolfies/discord.py-self", rev = "a7fdd753c6f908417d8944793fc7cf20ec39493f" }
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+target-version = "py314"
+fix = true
+src = [".", "src", "test"]
+extend-include = ["*.ipynb"]
+extend-exclude = [".venv", "src/persistence/schema/generated.py"]
+
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
+indent-style = "space"
+line-ending = "lf"
+quote-style = "double"
+skip-magic-trailing-comma = false
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "ARG00",
+    "C901",
+    "D10",
+    "ERA001",
+    "PLR0912",
+    "PLR0913",
+    "TC001",
+    "TC002",
+    "TC003",
+    "TD",
+    "UP037",
+]
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ty.src]
+include = ["src"]
