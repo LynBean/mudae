@@ -67,6 +67,7 @@ class MudaeLock:
             await asyncio.sleep(0.2)
 
     async def __aexit__(self, *exc_info: object) -> None:
+        await asyncio.sleep(1)
         if self._channel_lock is not None:
             self._channel_lock.release()
             self._channel_lock = None

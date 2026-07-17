@@ -7,7 +7,6 @@ import signal
 import traceback
 from asyncio.tasks import Task
 from collections import defaultdict
-from types import FrameType
 from typing import TYPE_CHECKING, ClassVar, override
 
 from discord import Color, Embed, Intents, Interaction, app_commands
@@ -208,32 +207,28 @@ class WatchdogCog(Cog):
             key=lambda t: t.get_name(),
         )
 
-        async def process_task(task: Task) -> list[Embed]:
+        async def process_task(task: Task) -> Embed:
             coro = task.get_coro()
-            stacks = task.get_stack()
+            stack = task.get_stack().pop()
 
-            async def process_stack(stack: FrameType, i: int) -> Embed:
-                embed = Embed(
-                    color=Color.light_gray(),
-                )
-                if stack:
-                    embed.description = f"```py\n{''.join(traceback.format_stack(stack))[-4048:]}\n```"
-                if i == 0:
-                    if coro:
-                        embed.title = f"` {coro.__name__} `"
-                    if task.get_name():
-                        embed.set_author(name=task.get_name())
-                    if task.done():
-                        embed.set_footer(text="Task is done")
-                    if task.cancelling():
-                        embed.set_footer(text="Task is cancelling")
-                    if task.cancelled():
-                        embed.set_footer(text="Task is cancelled")
+            embed = Embed(
+                color=Color.light_gray(),
+            )
+            if stack:
+                embed.description = f"```py\n{''.join(traceback.format_stack(stack))[-4048:]}\n```"
+            if coro:
+                embed.title = f"` {coro.__name__} `"
+            if task.get_name():
+                embed.set_author(name=task.get_name())
+            if task.done():
+                embed.set_footer(text="Task is done")
+            if task.cancelling():
+                embed.set_footer(text="Task is cancelling")
+            if task.cancelled():
+                embed.set_footer(text="Task is cancelled")
 
-                return embed
+            return embed
 
-            return await asyncio.gather(*[process_stack(stack, i) for i, stack in enumerate(stacks)])
-
-        embeds = [e for li in await asyncio.gather(*[process_task(task) for task in tasks]) for e in li]
+        embeds = await asyncio.gather(*[process_task(task) for task in tasks])
         for chunk in [embeds[i : i + 10] for i in range(0, len(embeds), 10)]:
             await interaction.followup.send(embeds=chunk)
