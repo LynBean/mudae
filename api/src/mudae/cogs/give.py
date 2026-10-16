@@ -81,12 +81,19 @@ class MudaeGive(MudaeCog):
                 if text is None:
                     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
+                text = text.replace("\u200b", "").strip()
+
                 if text.count("(No results)"):
                     break
 
-                await self.send_mudae_command(
-                    "collection give",
-                    input=f"<@{self.client.owner_id}> {'$'.join(text.splitlines())}",
+                # This is broken, Mudae won't send response back for some reason
+                # await self.send_mudae_command(
+                #     "collection give",
+                #     input=f"<@{self.client.owner_id}> {'$'.join(text.splitlines())}",
+                # )
+                await self.send_mudae_message(
+                    f"give <@{self.client.owner_id}> {'$'.join(text.splitlines())}",
+                    prefix=True,
                 )
 
             self._next_iteration = datetime.now(tz=UTC) + timedelta(hours=12)

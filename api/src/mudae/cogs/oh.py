@@ -99,7 +99,7 @@ class MudaeOh(MudaeCog):
                         buttons.sort(
                             key=lambda child: (
                                 not child.disabled,
-                                -self.SPHERE_RANKING.get(child.emoji.name, 0),
+                                -self.SPHERE_RANKING.get(child.emoji.name if child.emoji else "", 0),
                             ),
                         )
 

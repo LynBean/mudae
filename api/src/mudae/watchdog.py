@@ -209,17 +209,23 @@ class WatchdogCog(Cog):
 
         async def process_task(task: Task) -> Embed:
             coro = task.get_coro()
-            stack = task.get_stack().pop()
+            stack_list = task.get_stack()
+            stack = stack_list[-1] if stack_list else None
 
             embed = Embed(
                 color=Color.light_gray(),
             )
-            if stack:
+            if stack is not None:
                 embed.description = f"```py\n{''.join(traceback.format_stack(stack))[-4048:]}\n```"
-            if coro:
-                embed.title = f"` {coro.__name__} `"
-            if task.get_name():
-                embed.set_author(name=task.get_name())
+            coro_name = getattr(coro, "__name__", None)
+            if coro_name is None:
+                code = getattr(coro, "cr_code", None)
+                coro_name = code.co_name if code is not None else None
+            if coro_name:
+                embed.title = f"` {coro_name} `"
+            task_name = task.get_name()
+            if task_name:
+                embed.set_author(name=task_name)
             if task.done():
                 embed.set_footer(text="Task is done")
             if task.cancelling():

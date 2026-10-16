@@ -26,7 +26,7 @@ package = false
 members = []
 
 [tool.uv.sources]
-selfcord-py = { git = "https://github.com/dolfies/discord.py-self", rev = "a7fdd753c6f908417d8944793fc7cf20ec39493f" }
+selfcord-py = { git = "https://github.com/dolfies/discord.py-self", rev = "7e2305c4e0926f334e24c439d9e80b80c33cbab4" }
 
 [tool.ruff]
 line-length = 120
@@ -50,6 +50,7 @@ select = ["ALL"]
 ignore = [
     "ARG00",
     "C901",
+    "CPY001",
     "D10",
     "ERA001",
     "PLR0912",

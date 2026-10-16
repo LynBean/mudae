@@ -15,6 +15,9 @@ from selfcord.ext.commands import Bot, CommandError, Context
 from selfcord.http import Route
 from selfcord.user import BaseUser
 
+if TYPE_CHECKING:
+    from selfcord.ext.commands.bot import PrefixType
+
 from src.mudae.cogs.daily import setup as daily_setup
 from src.mudae.cogs.dk import setup as dk_setup
 from src.mudae.cogs.give import setup as give_setup
@@ -26,9 +29,6 @@ from src.mudae.cogs.oh import setup as oh_setup
 from src.mudae.cogs.roll import setup as roll_setup
 from src.mudae.cogs.say import setup as say_setup
 from src.mudae.watchdog import Watchdog
-
-if TYPE_CHECKING:
-    from selfcord.ext.commands.bot import PrefixType
 
 
 class StandingStatus(TypedDict):
@@ -271,6 +271,8 @@ class MudaeClient(Bot):
         return guild
 
     async def send_mudae_message(self, content: str, /, *, prefix: bool | None = None) -> Message:
+        if prefix:
+            logger.debug(f"[{self.name}] /{content}")
         channel = await self.mudae_channel
         return await channel.send(f"{self.mudae_bot_prefix if prefix else ''}{content}", silent=True)
 
@@ -296,6 +298,28 @@ class MudaeClient(Bot):
         return commands.pop()
 
     async def send_mudae_command(self, name: str, /, **kwargs: str) -> Interaction:
-        logger.debug(f"[{self.name}] /{name}")
+        log_options = " ".join(f"{key}={value}" for key, value in kwargs.items())
+        logger.debug(f"[{self.name}] /{name}{f' {log_options}' if log_options else ''}")
         command = await self.get_mudae_command(name)
-        return await command(**kwargs)
+
+        if self.user is None:
+            msg = "Client user is not available"
+            raise RuntimeError(msg)
+
+        top_level_name = command.parent.name if isinstance(command, SubCommand) else command.name
+        user_id = self.user.id
+
+        def check(interaction: Interaction) -> bool:
+            return interaction.name == top_level_name and interaction.user.id == user_id
+
+        pending_interaction = self.wait_for("interaction", check=check, timeout=15)
+        pending_finish = self.wait_for("interaction_finish", check=check, timeout=15)
+        await command(**kwargs)
+
+        interaction = await pending_interaction
+        finished = await pending_finish
+        if not finished.successful:
+            msg = f"Interaction /{name} failed"
+            raise RuntimeError(msg)
+
+        return interaction

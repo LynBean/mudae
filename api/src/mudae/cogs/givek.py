@@ -69,6 +69,8 @@ class MudaeGiveK(MudaeCog):
             if text is None:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
+            text = text.replace("\u200b", "").strip()
+
             kakera = self._get_kakera_values(text)
             if kakera > 0:
                 await self.send_mudae_command("kakera givek", input=f"<@{self.client.owner_id}> {kakera}")

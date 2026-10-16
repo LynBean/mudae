@@ -148,6 +148,8 @@ class MudaeRoll(MudaeCog):
         if not text:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
+        text = text.replace("\u200b", "").strip()
+
         match = re.search(r"\**\s*(\d+)\s*<:kakera:", text)
         if not match:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)

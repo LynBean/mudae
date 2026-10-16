@@ -7,10 +7,11 @@
     "dev:build": "docker compose -f docker-compose.dev.yml build",
     "dev:down": "docker compose -f docker-compose.dev.yml down",
     "dev:clean": "rm -rf node_modules; cd ./api; rm -rf .venv",
-    "dev:install": "bun install; cd ./api; uv sync"
+    "dev:install": "bun install; cd ./api; uv sync",
+    "dev:update": "bun update --latest; cd ./api; uv sync --upgrade"
   },
   "devDependencies": {
-    "prettier": "^3.8.1",
+    "prettier": "^3.9.9",
     "prettier-plugin-organize-imports": "^4.3.0"
   }
 }
