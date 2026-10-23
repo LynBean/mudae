@@ -1,43 +1,56 @@
-# Build stage
-FROM python:3.14-slim AS builder
+# FROM python:3.14-slim AS builder
 
-WORKDIR /app
+# WORKDIR /app
 
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    ENV=production
+# ENV PYTHONDONTWRITEBYTECODE=1 \
+#     PYTHONUNBUFFERED=1 \
+#     ENV=production
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    build-essential \
-    clang \
-    ccache \
-    patchelf \
-    curl \
-    git && \
-    rm -rf /var/lib/apt/lists/*
+# RUN apt-get update && \
+#     apt-get install -y --no-install-recommends \
+#     build-essential \
+#     clang \
+#     ccache \
+#     patchelf \
+#     curl \
+#     git && \
+#     rm -rf /var/lib/apt/lists/*
 
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+# RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
-COPY pyproject.toml uv.lock ./
+# COPY pyproject.toml uv.lock ./
 
-RUN /root/.local/bin/uv sync --frozen --verbose
+# RUN /root/.local/bin/uv sync --frozen --verbose
 
-RUN /root/.local/bin/uv pip install nuitka
+# RUN /root/.local/bin/uv pip install nuitka
 
-COPY . .
+# COPY . .
 
-RUN /app/.venv/bin/python -m nuitka \
-    --mode=onefile \
-    --python-flag=-O \
-    --clang \
-    --lto=no \
-    --deployment \
-    --follow-imports \
-    --include-package=ctypes \
-    --output-dir=/app/dist \
-    --output-filename=entrypoint \
-    /app/entrypoint.py
+# RUN /app/.venv/bin/python -m nuitka \
+#     --mode=onefile \
+#     --python-flag=-O \
+#     --clang \
+#     --lto=no \
+#     --deployment \
+#     --follow-imports \
+#     --include-package=ctypes \
+#     --output-dir=/app/dist \
+#     --output-filename=entrypoint \
+#     /app/entrypoint.py
+
+# FROM python:3.14-slim
+
+# WORKDIR /app
+
+# ENV PYTHONDONTWRITEBYTECODE=1 \
+#     PYTHONUNBUFFERED=1 \
+#     ENV=production
+
+# COPY --from=builder /app/dist/entrypoint /app
+
+# EXPOSE 5000
+
+# ENTRYPOINT ["/app/entrypoint"]
 
 FROM python:3.14-slim
 
@@ -47,8 +60,18 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     ENV=production
 
-COPY --from=builder /app/dist/entrypoint /app
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    curl \
+    git && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
+COPY . .
+
+RUN /root/.local/bin/uv sync --frozen
 
 EXPOSE 5000
 
-ENTRYPOINT ["/app/entrypoint"]
+ENTRYPOINT ["/app/.venv/bin/uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5000"]

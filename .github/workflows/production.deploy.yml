@@ -34,40 +34,40 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
 
-      - name: Generate API config
-        env:
-          REDIS_URL: redis://redis:6379
-          DISCORD_WATCHDOG_BOT_TOKEN: ${{ secrets.DISCORD_WATCHDOG_BOT_TOKEN }}
-          DISCORD_MUDAE_OWNER_IDS: ${{ secrets.DISCORD_MUDAE_OWNER_IDS }}
-          DISCORD_WATCHDOG_CHANNEL_ID: ${{ secrets.DISCORD_WATCHDOG_CHANNEL_ID }}
-          DISCORD_MUDAE_SELFBOT_PREFIX: ${{ vars.DISCORD_MUDAE_SELFBOT_PREFIX }}
-          DISCORD_MUDAE_BOT_PREFIX: ${{ vars.DISCORD_MUDAE_BOT_PREFIX }}
-          DISCORD_MUDAE_CHANNEL_IDS: ${{ secrets.DISCORD_MUDAE_CHANNEL_IDS }}
-          DISCORD_MUDAE_SELFBOT_TOKENS: ${{ secrets.DISCORD_MUDAE_SELFBOT_TOKENS }}
-        run: |
-          python3 -c "
-          import os
-          import glob
+      # - name: Generate API config
+      #   env:
+      #     REDIS_URL: redis://redis:6379
+      #     DISCORD_WATCHDOG_BOT_TOKEN: ${{ secrets.DISCORD_WATCHDOG_BOT_TOKEN }}
+      #     DISCORD_MUDAE_OWNER_IDS: ${{ secrets.DISCORD_MUDAE_OWNER_IDS }}
+      #     DISCORD_WATCHDOG_CHANNEL_ID: ${{ secrets.DISCORD_WATCHDOG_CHANNEL_ID }}
+      #     DISCORD_MUDAE_SELFBOT_PREFIX: ${{ vars.DISCORD_MUDAE_SELFBOT_PREFIX }}
+      #     DISCORD_MUDAE_BOT_PREFIX: ${{ vars.DISCORD_MUDAE_BOT_PREFIX }}
+      #     DISCORD_MUDAE_CHANNEL_IDS: ${{ secrets.DISCORD_MUDAE_CHANNEL_IDS }}
+      #     DISCORD_MUDAE_SELFBOT_TOKENS: ${{ secrets.DISCORD_MUDAE_SELFBOT_TOKENS }}
+      #   run: |
+      #     python3 -c "
+      #     import os
+      #     import glob
 
-          env_vars = {
-              'REDIS_URL': os.environ['REDIS_URL'],
-              'DISCORD_WATCHDOG_BOT_TOKEN': os.environ['DISCORD_WATCHDOG_BOT_TOKEN'],
-              'DISCORD_MUDAE_OWNER_IDS': os.environ['DISCORD_MUDAE_OWNER_IDS'],
-              'DISCORD_WATCHDOG_CHANNEL_ID': os.environ['DISCORD_WATCHDOG_CHANNEL_ID'],
-              'DISCORD_MUDAE_SELFBOT_PREFIX': os.environ['DISCORD_MUDAE_SELFBOT_PREFIX'],
-              'DISCORD_MUDAE_BOT_PREFIX': os.environ['DISCORD_MUDAE_BOT_PREFIX'],
-              'DISCORD_MUDAE_CHANNEL_IDS': os.environ['DISCORD_MUDAE_CHANNEL_IDS'],
-              'DISCORD_MUDAE_SELFBOT_TOKENS': os.environ['DISCORD_MUDAE_SELFBOT_TOKENS'],
-          }
+      #     env_vars = {
+      #         'REDIS_URL': os.environ['REDIS_URL'],
+      #         'DISCORD_WATCHDOG_BOT_TOKEN': os.environ['DISCORD_WATCHDOG_BOT_TOKEN'],
+      #         'DISCORD_MUDAE_OWNER_IDS': os.environ['DISCORD_MUDAE_OWNER_IDS'],
+      #         'DISCORD_WATCHDOG_CHANNEL_ID': os.environ['DISCORD_WATCHDOG_CHANNEL_ID'],
+      #         'DISCORD_MUDAE_SELFBOT_PREFIX': os.environ['DISCORD_MUDAE_SELFBOT_PREFIX'],
+      #         'DISCORD_MUDAE_BOT_PREFIX': os.environ['DISCORD_MUDAE_BOT_PREFIX'],
+      #         'DISCORD_MUDAE_CHANNEL_IDS': os.environ['DISCORD_MUDAE_CHANNEL_IDS'],
+      #         'DISCORD_MUDAE_SELFBOT_TOKENS': os.environ['DISCORD_MUDAE_SELFBOT_TOKENS'],
+      #     }
 
-          for filepath in glob.glob('**/*.py', recursive=True):
-              with open(filepath, 'r') as f:
-                  content = f.read()
-              for key, value in env_vars.items():
-                  content = content.replace(f'os.environ[\"{key}\"]', repr(value))
-              with open(filepath, 'w') as f:
-                  f.write(content)
-          "
+      #     for filepath in glob.glob('**/*.py', recursive=True):
+      #         with open(filepath, 'r') as f:
+      #             content = f.read()
+      #         for key, value in env_vars.items():
+      #             content = content.replace(f'os.environ[\"{key}\"]', repr(value))
+      #         with open(filepath, 'w') as f:
+      #             f.write(content)
+      #     "
 
       - name: Build and Push API Image
         uses: docker/build-push-action@v6
@@ -89,6 +89,13 @@ jobs:
           DOCKER_HOST: ${{ vars.TAILSCALE_TARGET_HOST }}
           DOCKER_IMAGE_TAG: latest
           DOCKER_IMAGE_URL: ${{ vars.DOCKER_IMAGE_URL }}
+          DISCORD_MUDAE_BOT_PREFIX: ${{ vars.DISCORD_MUDAE_BOT_PREFIX }}
+          DISCORD_MUDAE_CHANNEL_IDS: ${{ secrets.DISCORD_MUDAE_CHANNEL_IDS }}
+          DISCORD_MUDAE_OWNER_IDS: ${{ secrets.DISCORD_MUDAE_OWNER_IDS }}
+          DISCORD_MUDAE_SELFBOT_PREFIX: ${{ vars.DISCORD_MUDAE_SELFBOT_PREFIX }}
+          DISCORD_MUDAE_SELFBOT_TOKENS: ${{ secrets.DISCORD_MUDAE_SELFBOT_TOKENS }}
+          DISCORD_WATCHDOG_BOT_TOKEN: ${{ secrets.DISCORD_WATCHDOG_BOT_TOKEN }}
+          DISCORD_WATCHDOG_CHANNEL_ID: ${{ secrets.DISCORD_WATCHDOG_CHANNEL_ID }}
         run: |
           docker logout ghcr.io
           echo ${{ secrets.DOCKER_PAT }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
