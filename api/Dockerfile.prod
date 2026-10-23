@@ -74,4 +74,4 @@ RUN /root/.local/bin/uv sync --frozen
 
 EXPOSE 5000
 
-ENTRYPOINT ["/app/.venv/bin/uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5000"]
+ENTRYPOINT ["/app/.venv/bin/uvicorn", "entrypoint:app", "--host", "0.0.0.0", "--port", "5000"]
